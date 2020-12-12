@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import { IController } from "./IController";
 
 @injectable()
-export abstract class AbstractController implements IController{
+export abstract class AbstractController implements IController {
 
   private app?: Application;
   protected abstract prefix: string;
@@ -16,6 +16,10 @@ export abstract class AbstractController implements IController{
   forRoute(path: string): IRoute {
     return this.app?.route(`${this.prefix}${path}`) as IRoute;
   };
+
+  setMiddleware(middleware: any): any {
+    return this.app?.use(middleware);
+  }
 
   abstract registerRoutes(): void;
 }
