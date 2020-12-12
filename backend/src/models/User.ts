@@ -9,8 +9,8 @@ import {
 import * as bcrypt from "bcryptjs";
 
 @Entity()
-@Unique(["login"])
-export class Usuario extends BaseEntity {
+@Unique(["username"])
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
