@@ -10,7 +10,7 @@ export class IndexController extends AbstractController {
 
   index(){
     return (req: any, res: any, next: any) => {
-      return res.json({ msg: `API V1` });
+      return res.json({ msg: `TODO API` });
     }
   }
 }

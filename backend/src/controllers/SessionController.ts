@@ -57,7 +57,7 @@ export class SessionController extends AbstractController {
           return res.status(404).json({ msg: 'Usuário não encontrado' })
         }
 
-        return res.json(user);
+        return res.json({data: user});
       } catch (error) {
         return res.status(500).json({ msg: 'Erro interno no servidor', error })
       }

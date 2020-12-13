@@ -7,28 +7,15 @@ export class TaskController extends AbstractController {
   protected prefix: string = "/task"
 
   registerRoutes() {
-    this.forRoute('/').get(this.index())
+    this.forRoute('/').post(auth, this.create())
 
-    this.forRoute('/').post(this.create())
+    this.forRoute('/:id').get(auth, this.show())
 
-    this.forRoute('/:id').get(this.show())
+    this.forRoute('/:id').put(auth, this.update())
 
-    this.forRoute('/:id').put(this.update())
-
-    this.forRoute('/:id').delete(this.delete())
+    this.forRoute('/:id').delete(auth, this.delete())
 
     this.forRoute('/list').post(auth, this.getByList())
-  }
-
-  index() {
-    return async (req: any, res: any, next: any) => {
-      try {
-        const tasks = await Task.find({});
-        return res.json(tasks);
-      } catch (error) {
-        return res.status(500).json({ msg: 'Erro interno no servidor', error })
-      }
-    }
   }
 
   create() {

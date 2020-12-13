@@ -1,5 +1,4 @@
 import auth from "../middlewares/auth";
-import onlyGustavo from "../middlewares/onlyGustavo";
 import { User } from "../models/User";
 import { AbstractController } from "./AbstractController";
 
@@ -8,8 +7,6 @@ export class UserController extends AbstractController {
   protected prefix: string = "/user"
 
   registerRoutes() {
-    this.forRoute('/').get(onlyGustavo, this.index())
-
     this.forRoute('/').post(this.create())
 
     this.forRoute('/eu').post(auth, this.show())
@@ -18,17 +15,6 @@ export class UserController extends AbstractController {
 
     this.forRoute('/:id').delete(auth, this.delete())
 
-  }
-
-  index() {
-    return async (req: any, res: any, next: any) => {
-      try {
-        const users = await User.find({});
-        return res.json(users);
-      } catch (error) {
-        return res.status(500).json({ msg: 'Erro interno no servidor', error })
-      }
-    }
   }
 
   create() {
