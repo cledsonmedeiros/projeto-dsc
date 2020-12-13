@@ -1,4 +1,6 @@
+import auth from "../middlewares/auth";
 import { List } from "../models/List";
+import { User } from "../models/User";
 import { AbstractController } from "./AbstractController";
 
 export class ListController extends AbstractController {
@@ -6,15 +8,15 @@ export class ListController extends AbstractController {
   protected prefix: string = "/list"
 
   registerRoutes() {
-    this.forRoute('/').get(this.index())
+    this.forRoute('/').post(auth, this.create())
 
-    this.forRoute('/').post(this.create())
+    this.forRoute('/:id').get(auth, this.show())
 
-    this.forRoute('/:id').get(this.show())
+    this.forRoute('/:id').put(auth, this.update())
 
-    this.forRoute('/:id').put(this.update())
+    this.forRoute('/:id').delete(auth, this.delete())
 
-    this.forRoute('/:id').delete(this.delete())
+    this.forRoute('/myLists').post(auth, this.getByUser())
   }
 
   index() {
@@ -79,6 +81,29 @@ export class ListController extends AbstractController {
         }
         await list.remove();
         return res.status(200).json({ msg: 'Lista removida com sucesso' });
+      } catch (error) {
+        return res.status(500).json({ msg: 'Erro interno no servidor', error })
+      }
+    }
+  }
+
+  getByUser() {
+    return async (req: any, res: any, next: any) => {
+      try {
+        const user: User = await User.findOne({ id: req.userId }) as User;
+        if (!user) {
+          return res.status(404).json({ msg: 'Usuário não encontrado' })
+        }
+
+        const lists: Array<List> | undefined = await List.createQueryBuilder(
+          "list"
+        )
+          .orderBy("list.createdAt", "ASC")
+          .where("list.user = :user", { user: user.id })
+          .getMany();
+
+
+        return res.status(200).json(lists);
       } catch (error) {
         return res.status(500).json({ msg: 'Erro interno no servidor', error })
       }
