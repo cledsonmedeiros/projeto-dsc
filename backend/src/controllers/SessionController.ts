@@ -13,11 +13,9 @@ export class SessionController extends AbstractController {
   registerRoutes() {
     this.forRoute('/').post(this.create())
 
-    this.setMiddleware(auth)
+    this.forRoute('/').get(auth, this.show())
 
-    this.forRoute('/').get(this.show())
-
-    this.forRoute('/').delete(this.delete())
+    this.forRoute('/').delete(auth, this.delete())
   }
 
   create() {
@@ -37,7 +35,7 @@ export class SessionController extends AbstractController {
         return res.status(200).json({
           data: user,
           token: jwt.sign(
-            { userId: user.id },
+            { userId: user.id, userUsername: user.username },
             JWT_SECRET,
             { expiresIn: authConfig.expiresIn }
           ),
