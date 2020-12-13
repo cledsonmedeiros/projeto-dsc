@@ -17,9 +17,5 @@ export abstract class AbstractController implements IController {
     return this.app?.route(`${this.prefix}${path}`) as IRoute;
   };
 
-  setMiddleware(middleware: any): any {
-    return this.app?.use(middleware);
-  }
-
   abstract registerRoutes(): void;
 }
