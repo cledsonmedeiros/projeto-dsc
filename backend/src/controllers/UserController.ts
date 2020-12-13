@@ -8,7 +8,7 @@ export class UserController extends AbstractController {
   protected prefix: string = "/user"
 
   registerRoutes() {
-    this.forRoute('/').get(auth, onlyGustavo, this.index())
+    this.forRoute('/').get(onlyGustavo, this.index())
 
     this.forRoute('/').post(this.create())
 
@@ -17,6 +17,7 @@ export class UserController extends AbstractController {
     this.forRoute('/:id').put(auth, this.update())
 
     this.forRoute('/:id').delete(auth, this.delete())
+
   }
 
   index() {
