@@ -1,3 +1,4 @@
+import auth from "../middlewares/auth";
 import { Task } from "../models/Task";
 import { AbstractController } from "./AbstractController";
 
@@ -15,6 +16,8 @@ export class TaskController extends AbstractController {
     this.forRoute('/:id').put(this.update())
 
     this.forRoute('/:id').delete(this.delete())
+
+    this.forRoute('/list').post(auth, this.getByList())
   }
 
   index() {
@@ -79,6 +82,24 @@ export class TaskController extends AbstractController {
         }
         await task.remove();
         return res.status(200).json({ msg: 'Tarefa removida com sucesso' });
+      } catch (error) {
+        return res.status(500).json({ msg: 'Erro interno no servidor', error })
+      }
+    }
+  }
+
+  getByList() {
+    return async (req: any, res: any, next: any) => {
+      try {
+        const tasks: Array<Task> | undefined = await Task.createQueryBuilder(
+          "task"
+        )
+          .orderBy("task.createdAt", "ASC")
+          .where("task.list = :list", { list: req.body.list })
+          .getMany();
+
+
+        return res.status(200).json(tasks);
       } catch (error) {
         return res.status(500).json({ msg: 'Erro interno no servidor', error })
       }
