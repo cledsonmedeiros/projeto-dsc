@@ -1,3 +1,5 @@
+import auth from "../middlewares/auth";
+import onlyGustavo from "../middlewares/onlyGustavo";
 import { User } from "../models/User";
 import { AbstractController } from "./AbstractController";
 
@@ -6,15 +8,15 @@ export class UserController extends AbstractController {
   protected prefix: string = "/user"
 
   registerRoutes() {
-    this.forRoute('/').get(this.index())
+    this.forRoute('/').get(auth, onlyGustavo, this.index())
 
     this.forRoute('/').post(this.create())
 
-    this.forRoute('/:id').get(this.show())
+    this.forRoute('/eu').post(auth, this.show())
 
-    this.forRoute('/:id').put(this.update())
+    this.forRoute('/:id').put(auth, this.update())
 
-    this.forRoute('/:id').delete(this.delete())
+    this.forRoute('/:id').delete(auth, this.delete())
   }
 
   index() {
@@ -45,7 +47,7 @@ export class UserController extends AbstractController {
   show() {
     return async (req: any, res: any, next: any) => {
       try {
-        const user: User = await User.findOne({ id: req.params.id }) as User;
+        const user: User = await User.findOne({ id: req.userId }) as User;
 
         if (!user) {
           return res.status(404).json({ msg: 'Usuário não encontrado' })
@@ -61,7 +63,7 @@ export class UserController extends AbstractController {
   update() {
     return async (req: any, res: any, next: any) => {
       try {
-        const user: User = await User.findOne({ id: req.params.id }) as User;
+        const user: User = await User.findOne({ id: req.userId }) as User;
         Object.assign(user, req.body)
         if (req.body.password) {
           user.passwordHash();
@@ -77,7 +79,7 @@ export class UserController extends AbstractController {
   delete() {
     return async (req: any, res: any, next: any) => {
       try {
-        const user: User = await User.findOne({ id: req.params.id }) as User;
+        const user: User = await User.findOne({ id: req.userId }) as User;
         if (!user) {
           return res.status(404).json({ msg: 'Usuário não encontrado' })
         }
